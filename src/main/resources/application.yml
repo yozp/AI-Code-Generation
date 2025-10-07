@@ -7,6 +7,8 @@ spring:
     url: jdbc:mysql://localhost:3306/ai_code_generation
     username: root
     password: hsp
+  profiles:
+    active: local #激活本地环境
 
 server:
   port: 8125
