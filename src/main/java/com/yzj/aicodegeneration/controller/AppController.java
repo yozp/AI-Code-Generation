@@ -14,10 +14,7 @@ import com.yzj.aicodegeneration.constant.UserConstant;
 import com.yzj.aicodegeneration.exception.BusinessException;
 import com.yzj.aicodegeneration.exception.ErrorCode;
 import com.yzj.aicodegeneration.exception.ThrowUtils;
-import com.yzj.aicodegeneration.model.dto.app.AppAddRequest;
-import com.yzj.aicodegeneration.model.dto.app.AppAdminUpdateRequest;
-import com.yzj.aicodegeneration.model.dto.app.AppQueryRequest;
-import com.yzj.aicodegeneration.model.dto.app.AppUpdateRequest;
+import com.yzj.aicodegeneration.model.dto.app.*;
 import com.yzj.aicodegeneration.model.entity.User;
 import com.yzj.aicodegeneration.model.enums.CodeGenTypeEnum;
 import com.yzj.aicodegeneration.model.vo.AppVO;
@@ -295,28 +292,6 @@ public class AppController {
 
     /**
      * 应用聊天生成代码 1（流式 SSE）
-     * 返回 Flux 响应式对象，并且添加 SSE 对应的 MediaType
-     *
-     * @param appId   应用 ID
-     * @param message 用户消息
-     * @param request 请求对象
-     * @return 生成结果流
-     */
-    @GetMapping(value = "/chat/gen/code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> chatToGenCode(@RequestParam Long appId,
-                                      @RequestParam String message,
-                                      HttpServletRequest request) {
-        // 参数校验
-        ThrowUtils.throwIf(appId == null || appId <= 0, ErrorCode.PARAMS_ERROR, "应用id不能为空");
-        ThrowUtils.throwIf(StrUtil.isBlank(message), ErrorCode.PARAMS_ERROR, "用户消息不能为空");
-        // 获取当前登录用户
-        User loginUser = userService.getLoginUser(request);
-        // 调用服务生成代码（流式）
-        return appService.chatToGenCode(appId, message, loginUser);
-    }
-
-    /**
-     * 应用聊天生成代码 2（流式 SSE）
      * 返回 Flux 对象，并且设置泛型为 ServerSentEvent。使用这种方式可以省略 MediaType
      * 同时解决前端使用 EventSource 对接目前的接口时，会出现空格丢失问题
      *
@@ -326,9 +301,9 @@ public class AppController {
      * @return 生成结果流
      */
     @GetMapping(value = "/chat/gen/code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<String>> chatToGenCode2(@RequestParam Long appId,
-                                                        @RequestParam String message,
-                                                        HttpServletRequest request) {
+    public Flux<ServerSentEvent<String>> chatToGenCode(@RequestParam Long appId,
+                                                       @RequestParam String message,
+                                                       HttpServletRequest request) {
         // 参数校验
         ThrowUtils.throwIf(appId == null || appId <= 0, ErrorCode.PARAMS_ERROR, "应用ID无效");
         ThrowUtils.throwIf(StrUtil.isBlank(message), ErrorCode.PARAMS_ERROR, "用户消息不能为空");
@@ -345,14 +320,55 @@ public class AppController {
                     return ServerSentEvent.<String>builder()
                             .data(jsonData)
                             .build();
-                })
+                })//解决空格丢失问题
                 .concatWith(Mono.just(
                         // 发送结束事件
                         ServerSentEvent.<String>builder()
                                 .event("done")
                                 .data("")
                                 .build()
-                ));
+                ));//主动告诉前端生成完成
+    }
+
+    /**
+     * 应用聊天生成代码 2（流式 SSE）
+     * 返回 Flux 响应式对象，并且添加 SSE 对应的 MediaType
+     *
+     * @param appId   应用 ID
+     * @param message 用户消息
+     * @param request 请求对象
+     * @return 生成结果流
+     */
+    @GetMapping(value = "/chat/gen/code2", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> chatToGenCode2(@RequestParam Long appId,
+                                       @RequestParam String message,
+                                       HttpServletRequest request) {
+        // 参数校验
+        ThrowUtils.throwIf(appId == null || appId <= 0, ErrorCode.PARAMS_ERROR, "应用id不能为空");
+        ThrowUtils.throwIf(StrUtil.isBlank(message), ErrorCode.PARAMS_ERROR, "用户消息不能为空");
+        // 获取当前登录用户
+        User loginUser = userService.getLoginUser(request);
+        // 调用服务生成代码（流式）
+        return appService.chatToGenCode(appId, message, loginUser);
+    }
+
+    /**
+     * 应用部署
+     *
+     * @param appDeployRequest 部署请求
+     * @param request          请求
+     * @return 部署 URL
+     */
+    @PostMapping("/deploy")
+    public BaseResponse<String> deployApp(@RequestBody AppDeployRequest appDeployRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(appDeployRequest == null, ErrorCode.PARAMS_ERROR);
+        Long appId = appDeployRequest.getAppId();
+        ThrowUtils.throwIf(appId == null || appId <= 0, ErrorCode.PARAMS_ERROR, "应用 ID 不能为空");
+        // 获取当前登录用户
+        User loginUser = userService.getLoginUser(request);
+        // 调用服务部署应用
+        String deployUrl = appService.deployApp(appId, loginUser);
+        return ResultUtils.success(deployUrl);
     }
 
     //-----------------------------------------------------------------------------------------------------------
