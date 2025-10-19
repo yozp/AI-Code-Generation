@@ -163,6 +163,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         // 没有则生成 6 位 deployKey（大小写字母 + 数字）
         if (StrUtil.isBlank(deployKey)) {
             deployKey = RandomUtil.randomString(6);
+            //这里生成之后可以去数据库校验是否存在，但是没必要，因为概率小而且浪费性能，且deployKey是唯一键，重复插入会失败
         }
         // 7.复制文件到部署目录（不需要验证目录是否存在，因为会自动创建）
         String deployDirPath = AppConstant.CODE_DEPLOY_ROOT_DIR + File.separator + deployKey;
