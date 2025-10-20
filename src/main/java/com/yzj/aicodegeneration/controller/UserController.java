@@ -13,6 +13,7 @@ import com.yzj.aicodegeneration.exception.ThrowUtils;
 import com.yzj.aicodegeneration.model.dto.user.*;
 import com.yzj.aicodegeneration.model.vo.LoginUserVO;
 import com.yzj.aicodegeneration.model.vo.UserVO;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +38,7 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
+    @Resource
     private UserService userService;
 
     /**

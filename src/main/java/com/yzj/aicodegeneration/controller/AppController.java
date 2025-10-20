@@ -20,6 +20,7 @@ import com.yzj.aicodegeneration.model.enums.CodeGenTypeEnum;
 import com.yzj.aicodegeneration.model.vo.AppVO;
 import com.yzj.aicodegeneration.service.UserService;
 import dev.langchain4j.agent.tool.P;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
@@ -44,10 +45,10 @@ import java.util.Map;
 @RequestMapping("/app")
 public class AppController {
 
-    @Autowired
+    @Resource
     private AppService appService;
 
-    @Autowired
+    @Resource
     private UserService userService;
 
     /**
