@@ -2,7 +2,9 @@ package com.yzj.aicodegeneration.ai;
 
 import com.yzj.aicodegeneration.ai.model.HtmlCodeResult;
 import com.yzj.aicodegeneration.ai.model.MultiFileCodeResult;
+import dev.langchain4j.service.MemoryId;
 import dev.langchain4j.service.SystemMessage;
+import dev.langchain4j.service.UserMessage;
 import reactor.core.publisher.Flux;
 
 /**

@@ -157,7 +157,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
                     // 7.2. 流式响应完成后，添加AI消息到对话历史
                     String aiResponse = aiResponseBuilder.toString();
                     if (StrUtil.isNotBlank(aiResponse)) {
-                        chatHistoryService.addChatMessage(appId, message, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
+                        chatHistoryService.addChatMessage(appId, aiResponse, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
                     }
                 })
                 .doOnError(error -> {

@@ -1,6 +1,7 @@
 package com.yzj.aicodegeneration.core;
 
 import com.yzj.aicodegeneration.ai.AiCodeGeneratorService;
+import com.yzj.aicodegeneration.ai.AiCodeGeneratorServiceFactory;
 import com.yzj.aicodegeneration.ai.model.HtmlCodeResult;
 import com.yzj.aicodegeneration.ai.model.MultiFileCodeResult;
 import com.yzj.aicodegeneration.core.parser.CodeParserExecutor;
@@ -24,7 +25,7 @@ import java.io.File;
 public class AiCodeGeneratorFacade {
 
     @Resource
-    private AiCodeGeneratorService aiCodeGeneratorService;
+    AiCodeGeneratorServiceFactory aiCodeGeneratorServiceFactory;
 
     /**
      * 统一入口：根据类型生成并保存代码
@@ -37,6 +38,8 @@ public class AiCodeGeneratorFacade {
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "生成类型为空");
         }
+        // 给每个应用appId分配一个专属的 AI Service 实例，每个 AI Service 绑定独立的对话记忆。
+        AiCodeGeneratorService aiCodeGeneratorService = aiCodeGeneratorServiceFactory.getAiCodeGeneratorService(appId);
         return switch (codeGenTypeEnum) {
             case HTML -> {
                 HtmlCodeResult result = aiCodeGeneratorService.generateHtmlCode(userMessage);
@@ -64,6 +67,8 @@ public class AiCodeGeneratorFacade {
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "生成类型为空");
         }
+        // 给每个应用appId分配一个专属的 AI Service 实例，每个 AI Service 绑定独立的对话记忆。
+        AiCodeGeneratorService aiCodeGeneratorService = aiCodeGeneratorServiceFactory.getAiCodeGeneratorService(appId);
         return switch (codeGenTypeEnum) {
             case HTML -> {
                 Flux<String> codeStream = aiCodeGeneratorService.generateHtmlCodeStream(userMessage);
