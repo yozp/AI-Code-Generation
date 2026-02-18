@@ -102,7 +102,7 @@ public class AiCodeGeneratorServiceFactory {
     /**
      * AI 服务实例缓存
      */
-    private final Cache<Long, AiCodeGeneratorService> serviceCache = Caffeine.newBuilder()
+    private final Cache<String, AiCodeGeneratorService> serviceCache = Caffeine.newBuilder()
             .maximumSize(1000) //最大缓存 1000 个实例
             .expireAfterWrite(Duration.ofMinutes(30)) //写入后 30 分钟过期
             .expireAfterAccess(Duration.ofMinutes(10)) //访问后 10 分钟过期
@@ -135,11 +135,12 @@ public class AiCodeGeneratorServiceFactory {
      */
     public AiCodeGeneratorService getAiCodeGeneratorService(long appId, CodeGenTypeEnum codeGenType) {
         String cacheKey = buildCacheKey(appId, codeGenType);
-        return serviceCache.get(Long.valueOf(cacheKey), key -> createAiCodeGeneratorService(appId, codeGenType));
+        return serviceCache.get(cacheKey, key -> createAiCodeGeneratorService(appId, codeGenType));
     }
 
     /**
      * 构建缓存键
+     * 因为现在不同生成模式获取到的 AI Service 不同，所以需要额外将 codeGenType 作为缓存 key 的构造条件
      */
     private String buildCacheKey(long appId, CodeGenTypeEnum codeGenType) {
         return appId + "_" + codeGenType.getValue();
@@ -168,7 +169,7 @@ public class AiCodeGeneratorServiceFactory {
                     .hallucinatedToolNameStrategy(toolExecutionRequest -> ToolExecutionResultMessage.from(
                              toolExecutionRequest,
                             "Error: there is no tool called " + toolExecutionRequest.name()
-                    ))
+                    )) // hallucinatedToolNameStrategy（幻觉工具名称策略） 配置找不到工具时的处理策略
                     .build();
             //html 项目和多文件项目
             case HTML, MULTI_FILE -> AiServices.builder(AiCodeGeneratorService.class)

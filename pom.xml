@@ -36,13 +36,16 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- 开发工具，支持热部署、自动重启等开发时功能 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
+        <!--项目源码中重复了 langchain4j 的 dev.langchain4j 包，在 DevTools 的 RestartClassLoader 下，
+        这些类与依赖 JAR 中的同名类被不同类加载器加载，导致 AiServices.streamingChatModel(StreamingChatModel) 的类型不匹配。
+        项目启动直接报错，因此现在暂时注释掉这个依赖-->
+<!--        &lt;!&ndash; 开发工具，支持热部署、自动重启等开发时功能 &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-devtools</artifactId>-->
+<!--            <scope>runtime</scope>-->
+<!--            <optional>true</optional>-->
+<!--        </dependency>-->
 
         <!-- MySQL 数据库驱动连接器 -->
         <dependency>

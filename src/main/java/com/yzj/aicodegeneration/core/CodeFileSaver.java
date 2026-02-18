@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * 代码持久化工具类
  */
+@Deprecated
 public class CodeFileSaver {
 
     // 文件保存根目录

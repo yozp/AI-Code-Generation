@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
  * 提供静态方法解析不同类型的代码内容（针对流式输出）
  * 流式输出返回的是字符串片段codeContent，我们需要在 AI 全部返回完成后进行解析。
  */
+@Deprecated
 public class CodeParser {
 
     private static final Pattern HTML_CODE_PATTERN = Pattern.compile("```html\\s*\\n([\\s\\S]*?)```", Pattern.CASE_INSENSITIVE);

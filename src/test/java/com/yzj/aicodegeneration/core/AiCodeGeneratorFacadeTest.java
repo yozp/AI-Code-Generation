@@ -42,7 +42,7 @@ class AiCodeGeneratorFacadeTest {
     void generateVueProjectCodeStream() {
         Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream(
                 "简单的任务记录网站，总代码量不超过 200 行",
-                CodeGenTypeEnum.VUE_PROJECT, 1L);
+                CodeGenTypeEnum.VUE_PROJECT, 3L);// 注意不要在同一个id下进行多次相同的对话，否则不会输出代码，输出文字就会保存不到文件中，会报“保存失败: HTML代码内容不能为空”的错
         // 阻塞等待所有数据收集完成
         List<String> result = codeStream.collectList().block();
         // 验证结果
